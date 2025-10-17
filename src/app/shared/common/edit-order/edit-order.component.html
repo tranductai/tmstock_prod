@@ -1,0 +1,47 @@
+<div class="main-container">
+    <h2 class="text-xl font-bold mb-4">Editing Orders</h2>
+    <ng-container>
+        <!-- /// -->
+        <table class="border-collapse w-full">
+            <tr class="bg-gray-200">
+                <th class="border p-2 asterisk">Stock Code</th>
+                <th class="border p-2 asterisk">Type</th>
+                <th class="border p-2 asterisk">Quantity</th>
+                <th *ngIf="data.item.order_type == 'BUY'" class="border p-2 asterisk">Buy Price</th>
+                <th *ngIf="data.item.order_type == 'SELL'" class="border p-2 asterisk">Sell Price</th>
+                <th class="border p-2 asterisk">Total Amount</th>
+                <th class="border p-2">Time</th>
+                <th class="border p-2">Description</th>
+            </tr>
+            <tr>
+                <td><input [value]="data.item.stock_code" name="stock" placeholder="Stock Code" (change)="onChangeValue($event, 'stock_code')"
+                        class="border p-2 rounded w-32" /></td>
+                <td><select [value]="data.item.order_type" (change)="onChangeValue($event, 'order_type')" name="type" class="border p-2 rounded w-24">
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                    </select></td>
+                <td><input [value]="data.item.quantity | number" (change)="onChangeValue($event, 'quantity')" name="qty" placeholder="Qty" type="text"
+                        class="border p-2 rounded w-24" /></td>
+                        <!-- digitAddCommas [fractions]="0" [tmComponent]="true" -->
+                <td *ngIf="data.item.order_type == 'BUY'"> <input [value]="data.item.price_buy | number" 
+                        (change)="onChangeValue($event, 'price_buy')" name="price_buy" placeholder="Price" type="text"
+                        class="border p-2 rounded w-24" /></td>
+                <td *ngIf="data.item.order_type == 'SELL'"> <input [value]="data.item.price_sell | number" (change)="onChangeValue($event, 'price_sell')" name="price_sell" placeholder="Price"
+                        type="text" class="border p-2 rounded w-24" /></td>
+                <td><input [value]="totalMount | number" name="total_amount" placeholder="Total Amount" type="text" disabled
+                        class="border p-2 rounded w-24" /></td>
+                <td><input [value]="issuedDate" (change)="onChangeValue($event, 'created_at')" type="date" placeholder="Created Date" name="date"
+                        class="border p-2 rounded w-24" /></td>
+                <td><input [value]="data.item.description" (change)="onChangeValue($event, 'description')" type="text" placeholder="Description" name="description"
+                        class="border p-2 rounded w-24" /></td>
+            </tr>
+        </table>
+        <!-- /// -->
+        <div class="btn">
+            <button (click)="editOrder()" class="custom-btn bg-blue-600 text-white px-3 py-2 rounded">Save</button>
+            <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded" (click)="onClose()">Close</button>
+        </div>
+        <!-- <div class="btn-close">
+        </div> -->
+    </ng-container>
+</div>

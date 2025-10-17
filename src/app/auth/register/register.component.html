@@ -1,0 +1,19 @@
+<div class="flex flex-col items-center justify-center h-screen bg-gray-100">
+  <div class="bg-white shadow-lg rounded-lg p-6 w-80">
+    <h2 class="text-xl font-bold mb-4 text-center">Register</h2>
+    <input [(ngModel)]="email" type="email" placeholder="Email" class="border p-2 w-full mb-2 rounded" />
+    <input [(ngModel)]="password" type="password" placeholder="Password" class="border p-2 w-full mb-2 rounded" />
+    <input [(ngModel)]="role" type="text" placeholder="Role" class="border p-2 w-full mb-2 rounded" />
+    <input [(ngModel)]="fullName" type="text" placeholder="Full Name" class="border p-2 w-full mb-2 rounded" />
+    <input [(ngModel)]="avatarUrl" type="text" placeholder="Avatar URL (optional)"
+      class="border p-2 w-full mb-4 rounded" />
+    <button (click)="register()" class="bg-green-600 text-white w-full py-2 rounded">Register</button>
+
+    <p *ngIf="error" class="text-red-500 mt-3 text-center">{{ error }}</p>
+    <p *ngIf="success" class="text-green-600 mt-3 text-center">{{ success }}</p>
+    <p class="text-sm text-center mt-4">
+      Already have an account?
+      <a routerLink="/login" class="text-blue-500 underline">Login</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="flex items-center justify-between bg-gray-800 text-white px-6 py-3">
+    <div class="font-bold text-lg">📈 Stock Orders App</div>
+    <div *ngIf="profile" class="flex items-center space-x-3">
+        <img *ngIf="profile.avatar_url" [src]="profile.avatar_url" class="w-8 h-8 rounded-full border" />
+        <span *ngIf="isLogin">{{ profile.full_name }} ({{ profile.role }})</span>
+    </div>
+    <div *ngIf="isLogin">
+        <button (click)="logout()" class="bg-red-500 text-white px-3 py-1 rounded mb-3">Logout</button>
+    </div>
+</div>
