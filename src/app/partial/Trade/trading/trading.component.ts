@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { SupabaseService } from '../../../services/supabase.service';
 import { Router, RouterModule } from '@angular/router';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './trading.component.html',
   styleUrl: './trading.component.css'
 })
-export class TradingComponent {
+export class TradingComponent implements OnInit, OnDestroy{
   issuedDate: string | null = null;
   orders: any[] = [];
   summary: any[] = [];
@@ -42,6 +42,7 @@ export class TradingComponent {
   stockPrevious: any[] = []
   stocks: any[] = [];
   sub?: Subscription;
+  private refreshInterval: any;
   listStockCodeSummary = ['VND', 'HPG', 'NKG'];
 
   constructor(private sb: SupabaseService, private router: Router, public dialog: MatDialog, private datePipe: DatePipe, private realtime: RealtimeService) { }
@@ -57,7 +58,7 @@ export class TradingComponent {
 
     // Lấy dữ liệu lịch sử ban đầu
     this.refresh();
-    setInterval(() => {
+    this.refreshInterval = setInterval(() => {
       this.refresh(); // lấy lại DChart API mỗi 5s
     }, 5000);
 
@@ -205,11 +206,22 @@ export class TradingComponent {
   }
   /////
 
+  //STOP UPDATE EVERY 5S
+  stopPolling() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+      console.log('Polling stopped!');
+    }
+  }
+
+
   ngOnDestroy() {
     if (this.subscription) this.sb.removeChannel(this.subscription);
     if (this.subscriptions) this.sb.removeChannel(this.subscriptions);
     this.sub?.unsubscribe();
     this.realtime.disconnect();
+    this.stopPolling();
   }
 
   async getOrders() {

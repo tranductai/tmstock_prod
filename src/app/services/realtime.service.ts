@@ -32,7 +32,7 @@ export class RealtimeService {
   /** Gọi REST API lấy dữ liệu lịch sử */
   fetchHistory(symbols: string[]): Observable<any> {
     const query = symbols.join(',');
-    return this.http.get(`${this.apiUrl}?symbols=${query}`);
+    return this.http.get(`${this.apiUrl}/stocks?symbols=${query}`);
   }
 
   /** Kết nối WebSocket realtime */
