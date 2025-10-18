@@ -14,7 +14,10 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   email = '';
   password = '';
-  eye_icon = 'assets/images/eye.svg'
+  isHiddenEye: boolean = false;
+  eye_icon = 'assets/images/eye.svg';
+  hidden_eye = 'assets/images/hidden_eye_icon.svg';
+  gg_icon = 'assets/images/icons8-google.svg'
   constructor(private sb: SupabaseService, private router: Router) { }
 
   async login() {
@@ -39,5 +42,8 @@ export class LoginComponent {
     }else{
       alert('Please enter Password!')
     }
+  }
+  showHiddenEye(){
+    this.isHiddenEye = !this.isHiddenEye;
   }
 }

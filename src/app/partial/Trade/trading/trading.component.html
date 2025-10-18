@@ -1,13 +1,13 @@
 <div class="main-container p-4">
-    <h2 class="text-xl font-bold mb-4">Stock Orders</h2>
+    <!-- <h2 class="text-xl font-bold mb-4">Stock Orders</h2> -->
     <div class="nav">
-        <button class="custom-btn-add bg-blue-600 text-white px-3 py-2 rounded" (click)="onChangeTab('orderList')">Order
+        <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded" (click)="onChangeTab('orderList')">Order
             List</button>
-        <button class="custom-btn-add bg-blue-600 text-white px-3 py-2 rounded"
+        <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded"
             (click)="onChangeTab('summary')">Summary</button>
     </div>
     <div *ngIf="isOrderList" class="btn-add">
-        <button *ngIf="!isAdd" class="custom-btn-add bg-blue-600 text-white px-3 py-2 rounded"
+        <button *ngIf="!isAdd" class="custom-btn bg-blue-600 text-white px-3 py-2 rounded"
             (click)="onAddNewOrder()">Add
             New Order</button>
     </div>

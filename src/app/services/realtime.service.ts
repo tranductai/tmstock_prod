@@ -1,7 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 export interface StockData {
   code: string;
@@ -21,7 +20,7 @@ export interface StockData {
   providedIn: 'root',
 })
 export class RealtimeService {
-  private apiUrl = environment.apiUrl;;
+  private apiUrl = 'http://localhost:3000/api/stocks';
   private wsUrl = 'ws://localhost:3000';
   private socket?: WebSocket;
   private stocks$ = new BehaviorSubject<StockData[]>([]);
@@ -32,7 +31,7 @@ export class RealtimeService {
   /** Gọi REST API lấy dữ liệu lịch sử */
   fetchHistory(symbols: string[]): Observable<any> {
     const query = symbols.join(',');
-    return this.http.get(`${this.apiUrl}/stocks?symbols=${query}`);
+    return this.http.get(`${this.apiUrl}?symbols=${query}`);
   }
 
   /** Kết nối WebSocket realtime */

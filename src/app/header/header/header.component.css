@@ -1,0 +1,7 @@
+.custom-btn {
+    cursor: pointer;
+    max-width: 80px;
+    position: relative;
+    left: 4rem;
+    top: 1rem;
+}

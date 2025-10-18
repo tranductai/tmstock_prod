@@ -35,7 +35,6 @@ export class TradingComponent implements OnInit, OnDestroy{
   isOrderList: boolean = true;
   isSummary: boolean = false;
   subscription: any;
-  // private sub!: Subscription;
   subscriptions: any;
   userProfile: any;
   summaryList: any = [];
@@ -43,6 +42,8 @@ export class TradingComponent implements OnInit, OnDestroy{
   stocks: any[] = [];
   sub?: Subscription;
   private refreshInterval: any;
+  errorCount = 0;
+  private readonly MAX_ERRORS = 5;
   listStockCodeSummary = ['VND', 'HPG', 'NKG'];
 
   constructor(private sb: SupabaseService, private router: Router, public dialog: MatDialog, private datePipe: DatePipe, private realtime: RealtimeService) { }
@@ -53,19 +54,19 @@ export class TradingComponent implements OnInit, OnDestroy{
     await this.getSummary();
     //////////////
 
-    // Bắt đầu kết nối WS
-    this.realtime.connect(this.listStockCodeSummary);
-
+    // Bắt đầu kết nối WS: START
+    // this.realtime.connect(this.listStockCodeSummary);
+    // Subscribe realtime updates
+    // this.sub = this.realtime.getRealtimeData().subscribe((data) => {
+    //   if (data) this.stocks = data;
+    // });
+    // Bắt đầu kết nối WS: END
+     
     // Lấy dữ liệu lịch sử ban đầu
     this.refresh();
     this.refreshInterval = setInterval(() => {
       this.refresh(); // lấy lại DChart API mỗi 5s
     }, 5000);
-
-    // Subscribe realtime updates
-    this.sub = this.realtime.getRealtimeData().subscribe((data) => {
-      if (data) this.stocks = data;
-    });
     //////////////
 
     ///ORDER REALTIME
@@ -192,15 +193,26 @@ export class TradingComponent implements OnInit, OnDestroy{
 
   ////GET REALTIME STOCK PRICE WEBSOCKET
   refresh() {
-    this.realtime.fetchHistory(this.listStockCodeSummary).subscribe((res) => {
-      if (res?.data) {
-        const data = Object.values(res.data) as StockData[];
-        this.stocks = data;
-        if (this.stockPrevious.length <= 0) {
-          this.stockPrevious = this.stocks;
-          console.log('thissssss', this.stockPrevious)
+    this.realtime.fetchHistory(this.listStockCodeSummary).subscribe({
+      next: (res) => {
+        if (res?.data) {
+          const data = Object.values(res.data) as StockData[];
+          this.stocks = data;
+          if (this.stockPrevious.length <= 0) {
+            this.stockPrevious = this.stocks;
+            console.log('thissssss', this.stockPrevious)
+          }
+          this.errorCount = 0; // reset khi thành công
+          console.log('dataaaaaaaaaaaaaaaaaa', this.stocks)
         }
-        console.log('dataaaaaaaaaaaaaaaaaa', this.stocks)
+      },
+      error: (err) => {
+        this.errorCount++;
+        console.warn(`❌ Lỗi lần ${this.errorCount}:`, err.message);
+        if (this.errorCount >= this.MAX_ERRORS) {
+          console.error('🚫 Quá 5 lần lỗi, dừng polling!');
+          clearInterval(this.refreshInterval);
+        }
       }
     });
   }
@@ -215,12 +227,11 @@ export class TradingComponent implements OnInit, OnDestroy{
     }
   }
 
-
   ngOnDestroy() {
     if (this.subscription) this.sb.removeChannel(this.subscription);
     if (this.subscriptions) this.sb.removeChannel(this.subscriptions);
-    this.sub?.unsubscribe();
-    this.realtime.disconnect();
+    // this.sub?.unsubscribe();
+    // this.realtime.disconnect();
     this.stopPolling();
   }
 
@@ -409,6 +420,7 @@ export class TradingComponent implements OnInit, OnDestroy{
     });
     this.isAdd = false
   }
+
   checkColorPriceUpDown(item: any) {
     if (item['close'] - item['reference'] > 0) {
       return 'price-up'
@@ -431,7 +443,7 @@ export class TradingComponent implements OnInit, OnDestroy{
             console.log('22', item.code)
             this.stockPrevious[i]['close'] = item['close'];
             return ' price-down-animate'
-          }else{
+          } else {
             return ''
           }
         // if (item['close'] == this.stockPrevious[i]['close']) {
