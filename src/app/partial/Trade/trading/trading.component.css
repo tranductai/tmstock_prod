@@ -1,11 +1,5 @@
-/* :host {
-  display: block;
-  max-width: 800px;
-  margin: 2rem auto;
-  font-family: system-ui, sans-serif;
-} */
 .main-container {
-  padding: 0rem 5rem 0rem 5rem;
+  padding: 0rem 4rem 0rem 4rem;
 }
 
 h2 {
@@ -23,13 +17,27 @@ button:hover {
 
 /* Table styling */
 table {
-  width: 100%;
+  /* width: 100%; */
   border-collapse: collapse;
   font-size: 14px;
 }
 
-.tb-add {
+/* .tb-add {
   width: 90% !important;
+
+  tr {
+    th {
+      width: 14%;
+    }
+
+    td {
+      width: 2%;
+    }
+  }
+} */
+
+.tb-cash {
+  width: 70% !important;
 
   tr {
     th {
@@ -64,7 +72,7 @@ td:last-child {
   /* Sets the background color of the last td in each row */
 }
 
-.tr_summary {
+.tr_portfolio {
   td {
     background-color: #f9fafb;
     font-weight: 500;
@@ -79,16 +87,10 @@ td {
   border: 1px solid #c2c2d6;
 }
 
-/* ::ng-deep tr:nth-child(even) {
-  background-color: #f9fafb;
-} */
-
 tr:hover {
   background-color: #c2c2d6;
   border: 1 solid #a366ff !important;
   color: #9900ff;
-  /* font-weight: bold; */
-  /* font-size: 15px; */
 }
 
 /* Form styling */
@@ -105,12 +107,6 @@ form select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.btn-add {
-  padding-bottom: 0.5rem;
-  padding-right: 8.5rem;
-  text-align: end;
 }
 
 .custom-btn {
@@ -130,14 +126,6 @@ form select:focus {
   padding-right: 11rem;
 }
 
-.btn-mdf {
-  width: 10%;
-}
-
-.mdf {
-  margin-left: 1rem;
-}
-
 .nav {
   position: relative;
   top: 2rem;
@@ -146,28 +134,11 @@ form select:focus {
   max-width: 50%;
 }
 
-.btn-hd {
-  padding-bottom: 2.5rem;
-}
-
 .asterisk {
   &:before {
     content: '* ';
     color: red;
   }
-}
-
-.container-add {
-  padding-top: 3rem;
-}
-
-.tab-summary {
-  width: 50%;
-}
-
-.summary-group {
-  display: flex;
-  gap: 1rem;
 }
 
 .price-up {
@@ -189,35 +160,117 @@ form select:focus {
   border: 2px solid #ff1a75;
   background-color: #ffff00;
   border-radius: 5px;
-  min-width: 15%;
+  /* min-width: 15%; */
+  /* width: 15%; */
+  max-width: 50%;
   padding: 0.4rem;
   margin-top: 0.5rem;
+  margin-right: 1rem;
 }
-.price-down-animate{
-   animation: blinker-down .7s infinite;
-    color: #ee5042;
+
+.price-down-animate {
+  animation: blinker-down 3s 1;
+  color: #ee5042;
 }
-.price-up-animate{
-   animation: blinker-up .7s infinite;
+
+.price-up-animate {
+  animation: blinker-up 3s 1;
 }
+
 @keyframes blinker-down {
   50% {
     background-color: #ee5042;
     color: #fff;
   }
 }
+
 @keyframes blinker-up {
   50% {
     background-color: #00aa00;
     color: #fff;
   }
 }
-.price-nochange-animate{
-   animation: blinker-nochange .7s infinite;
+
+.price-nochange-animate {
+  animation: blinker-nochange 3s 1;
 }
+
 @keyframes blinker-nochange {
   50% {
     background-color: #ccaa00;
     color: #fff;
+  }
+}
+
+.claim-cards {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 7rem 2rem 12rem !important;
+
+  .claim-cards-item {
+    width: 15rem;
+    border: none;
+    max-height: 65px;
+
+    span {
+      color: #000000;
+    }
+
+    .card {
+      height: 100% !important;
+    }
+
+    .card-item {
+      align-items: center;
+      padding: 1rem 1rem;
+      cursor: pointer;
+      background-color: #f8f8f8;
+      border-right: 2px solid #ffffff;
+
+      .title-card {
+        display: flex;
+
+        .imageIcon {
+          margin: 0 1rem;
+        }
+      }
+    }
+
+    .first-card {
+      border-radius: 35px 0 0 35px;
+    }
+
+    .last-card {
+      border-radius: 0 35px 35px 0;
+      border-right: none !important;
+    }
+
+    .active {
+      background-color: #a366ff !important;
+
+      span {
+        color: white !important;
+      }
+
+      .imageIcon {
+        filter: brightness(0) invert(1);
+      }
+    }
+
+    .disable {
+      opacity: 30%;
+    }
+
+    .valid {
+      background-color: #a366ff !important;
+
+      span {
+        color: white !important;
+      }
+
+      .imageIcon {
+        filter: brightness(0) invert(1);
+      }
+    }
   }
 }

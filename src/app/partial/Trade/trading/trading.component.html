@@ -1,95 +1,110 @@
 <div class="main-container p-4">
     <!-- <h2 class="text-xl font-bold mb-4">Stock Orders</h2> -->
-    <div class="nav">
+    <!-- <div class="nav">
         <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded" (click)="onChangeTab('orderList')">Order
             List</button>
         <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded"
-            (click)="onChangeTab('summary')">Summary</button>
+            (click)="onChangeTab('portfolio')">Portfolio</button>
+        <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded"
+            (click)="onChangeTab('CashFlow')">Cash Flow</button>
+    </div> -->
+    <!-- ====================NAVIGATION BAR: start=================================== -->
+    <div class="claim-cards">
+        <div (click)="onChangeTab(i)" class="claim-cards-item" *ngFor="let step of listmenu; index as i">
+            <div [class.active]="currentStep == i" [class.valid]="step.valid == true" [ngClass]="styleForCardItem(i)"
+                class="card card-item">
+                <div class="title-card">
+                    <img class="imageIcon" alt="Item Image" src="{{step.iconSrc}}" />
+                    <span>{{step.label}}</span>
+                </div>
+            </div>
+        </div>
     </div>
-    <div *ngIf="isOrderList" class="btn-add">
+    <!-- ====================NAVIGATION BAR: end=================================== -->
+    <div *ngIf="isShowOption == 'orderList'" class="text-right">
         <button *ngIf="!isAdd" class="custom-btn bg-blue-600 text-white px-3 py-2 rounded"
-            (click)="onAddNewOrder()">Add
-            New Order</button>
+            (click)="onAddNewOrder()">Thêm Lệnh</button>
     </div>
-    <div *ngIf="!isOrderList" class="btn-hd">
+    <div *ngIf="isShowOption != 'orderList'" class="pb-[2.5rem]">
     </div>
-    <div *ngIf="isAdd" class="container-add">
+    <div *ngIf="isAdd" class="pt-[3rem]">
         <!-- /// -->
-        <table class="border-collapse tb-add">
+        <table class="border-collapse w-[90%]">
             <tr class="bg-gray-200">
-                <th class="border p-2 asterisk">Type</th>
-                <th class="border p-2 asterisk">Stock Code</th>
-                <th class="border p-2 asterisk">Quantity</th>
-                <th class="border p-2 asterisk">Buy Price</th>
-                <th *ngIf="orderBody['order_type'] == 'SELL'" class="border p-2 asterisk">Sell Price</th>
-                <th class="border p-2 asterisk">Total Amount</th>
-                <th class="border p-2 asterisk">Time</th>
-                <th class="border p-2">Description</th>
+                <th class="border p-2 asterisk w-[4%]">Loại Lệnh</th>
+                <th class="border p-2 asterisk w-[6%]">Mã</th>
+                <th class="border p-2 asterisk w-[6%]">Số Lượng</th>
+                <th class="border p-2 asterisk w-[6%]">Giá Mua</th>
+                <th *ngIf="orderBody['order_type'] == 'SELL'" class="border p-2 asterisk w-[10%]">Giá Bán</th>
+                <th class="border p-2 asterisk w-[8%]">Tổng Tiền</th>
+                <th class="border p-2 asterisk w-[6%]">Thời Gian</th>
+                <th class="border p-2">Trạng Thái</th>
             </tr>
-            <tr class="tr_summary">
+            <tr class="tr_portfolio">
                 <!-- ORDER TYEPE -->
                 <td><select [value]="orderBody['order_type']" (change)="onChangeValue($event, 'order_type')" name="type"
-                        class="border p-2 rounded">
+                        class="border p-2 rounded w-full">
                         <option value="BUY">BUY</option>
                         <option value="SELL">SELL</option>
                     </select></td>
                 <!-- STOCK CODE -->
                 <td><input [value]="orderBody['stock_code']" name="stock" placeholder="Stock Code"
-                        (change)="onChangeValue($event, 'stock_code')" class="border p-2 rounded" /></td>
+                        (change)="onChangeValue($event, 'stock_code')" class="border p-2 rounded w-full" /></td>
                 <!-- QUANTITY -->
                 <td><input [value]="parseInt(orderBody['quantity']) | number"
                         (change)="onChangeValue($event, 'quantity')" name="qty" placeholder="Qty" type="text"
-                        class="border p-2 rounded" /></td>
+                        class="border p-2 rounded w-full" /></td>
                 <!-- digitAddCommas [fractions]="0" [tmComponent]="true" -->
                 <!-- PRICE BUY -->
                 <td *ngIf="orderBody['order_type'] == 'BUY'"> <input [value]="parseInt(orderBody['price_buy']) | number"
                         (change)="onChangeValue($event, 'price_buy')" name="price_buy" placeholder="Price" type="text"
-                        class="border p-2 rounded" /></td>
+                        class="border p-2 rounded w-full" /></td>
                 <!-- AVERAGE PRICE FOR ADD SELL -->
-                <td *ngIf="orderBody['order_type'] == 'SELL'"> <input [value]="populateAveragePriceOrder() | number"
-                        name="price_buy_in_sell" placeholder="Price" type="text" disabled class="border p-2 rounded" />
+                <td *ngIf="orderBody['order_type'] == 'SELL'"> <input [value]="populateAveragePriceOrder() | number: '1.0-0'"
+                        name="price_buy_in_sell" placeholder="Price" type="text" disabled
+                        class="border p-2 rounded w-full" />
                 </td>
                 <!-- PRICE SELL -->
                 <td *ngIf="orderBody['order_type'] == 'SELL'"> <input
                         [value]="parseInt(orderBody['price_sell'])| number"
                         (change)="onChangeValue($event, 'price_sell')" name="price_sell" placeholder="Price" type="text"
-                        class="border p-2 rounded" /></td>
+                        class="border p-2 rounded w-full" /></td>
                 <!-- TOTAL AMOUNT -->
                 <td><input [value]="totalAmount() | number" name="total_amount" placeholder="Total Amount" type="text"
-                        disabled class="border p-2 rounded" /></td>
+                        disabled class="border p-2 rounded w-full" /></td>
                 <!-- ISSUE DATE -->
                 <td><input [value]="orderBody['created_at']" (change)="onChangeValue($event, 'created_at')" type="date"
-                        placeholder="Created Date" name="date" class="border p-2 rounded" /></td>
+                        placeholder="Created Date" name="date" class="border p-2 rounded w-full" /></td>
                 <!-- DESCRIPTION -->
                 <td style="width: 16%;"><input [value]="orderBody['description']"
                         (change)="onChangeValue($event, 'description')" type="text" placeholder="Description"
-                        name="description" class="border p-2 rounded" /></td>
+                        name="description" class="border p-2 rounded w-full" /></td>
             </tr>
         </table>
         <!-- /// -->
         <div class="btn-save">
-            <button (click)="addCall('orders')"
-                class="custom-btn bg-blue-600 text-white px-3 py-2 rounded">Save</button>
+            <button (click)="addCall('orders')" class="custom-btn bg-blue-600 text-white px-3 py-2 rounded">Lưu</button>
         </div>
         <div class="btn-close">
-            <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded" (click)="onClose()">Close</button>
+            <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded" (click)="onClose()">Đóng</button>
         </div>
     </div>
 
-    <table *ngIf="isOrderList" class="border-collapse w-full">
+    <table *ngIf="isShowOption == 'orderList'" class="border-collapse w-full rounded">
         <tr class="bg-gray-200">
-            <th class="border p-2">Stock Code</th>
-            <th class="border p-2">Type</th>
-            <th class="border p-2">Quantity</th>
-            <th class="border p-2">Buy Price</th>
-            <th class="border p-2">Sell Price</th>
-            <th class="border p-2">Total Amount</th>
-            <th class="border p-2">Time</th>
-            <th class="border p-2">Description</th>
+            <th class="border p-2 w-[4%]">Mã</th>
+            <th class="border p-2 w-[6%]">Loại Lệnh</th>
+            <th class="border p-2 w-[8%]">Số Lượng</th>
+            <th class="border p-2 w-[8%]">Giá Mua</th>
+            <th class="border p-2 w-[8%]">Giá Bán</th>
+            <th class="border p-2 w-[10%]">Tổng Tiền</th>
+            <th class="border p-2 w-[8%]">Thời Gian</th>
+            <th class="border p-2">Trạng Thái</th>
         </tr>
         <tr class="font-order" *ngFor="let o of orders">
             <td class="border p-2">{{o.stock_code}}</td>
-            <td class="border p-2">{{o.order_type}}</td>
+            <td class="border p-2" [ngClass]="o.order_type == 'BUY' ? 'text-green-600' : 'text-red-600'">
+                {{o.order_type}}</td>
             <td class="border p-2">{{parseInt(o.quantity) | number}}</td>
             <td class="border p-2">{{parseInt(o.price_buy) | number}}</td>
             <td class="border p-2">{{parseInt(o.price_sell) | number}}</td>
@@ -97,52 +112,239 @@
             <!-- | date: 'dd/MM/yyyy HH:mm a' -->
             <td class="border p-2">{{o.created_at | date: 'dd/MM/yyyy'}}</td>
             <td class="border p-2">{{o.description}}</td>
-            <td class="btn-mdf">
-                <button class="mdf custom-btn bg-blue-600 text-white px-3 py-2 rounded"
-                    (click)="deleteCall(o.id, 'orders')">Delete</button>
+            <td class="w-[11%]">
+                <button class="ml-[1rem] custom-btn bg-blue-600 text-white px-3 py-2 rounded"
+                    (click)="deleteOrder(o, 'orders')">Delete</button>
                 <button (click)="openPopup(o)"
-                    class="mdf custom-btn bg-blue-600 text-white px-3 py-2 rounded">Edit</button>
+                    class="ml-[1rem] custom-btn bg-blue-600 text-white px-3 py-2 rounded">Edit</button>
             </td>
         </tr>
     </table>
-    <div class="summary-group">
-        <table *ngIf="isSummary" class="border-collapse tab-summary">
+    <mat-paginator [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page" (page)="onPageChange($event, 'orders')">
+    </mat-paginator>
+    <!-- ===============portfolio: start============= -->
+    <ng-container *ngIf="isShowOption == 'portfolio'">
+        <div class="flex">
+            <div class="w-1/2 text-center font-bold">
+                <label>Danh Mục Trên Sàn</label>
+            </div>
+            <div class="w-1/2 text-center font-bold">
+                <label>Tóm Tắt Lệnh Theo CP</label>
+            </div>
+        </div>
+        <div class="flex gap-5">
+            <div class="w-1/2">
+                <table class="border-collapse w-full">
+                    <tr class="bg-gray-200">
+                        <th class="border p-2 w-[4%]">Mã</th>
+            
+                        <th class="border p-2 w-[8%]">Khối Lượng</th>
+            
+                        <th class="border p-2 w-[8%]">Giá Vốn (TB)</th>
+            
+                        <th class="border p-2 w-[8%]">Giá Thị Trường</th>
+            
+                        <th class="border p-2 w-[10%]">Tổng Vốn</th>
+            
+                        <th class="border p-2 w-[10%]">Tổng Giá Trị TT</th>
+            
+                        <th class="border p-2 w-[10%]">Lãi/Lỗ</th>
+            
+                        <th class="border p-2 w-[4%]">% Lãi/Lỗ</th>
+            
+                    </tr>
+                    <tr class="tr_portfolio" *ngFor="let o of portfolio">
+                        <td class="border p-2" [ngClass]="calculateProfitLost(o) > 0 ? 'price-up' : 'price-down'">{{o.stock_code}}
+                        </td>
+            
+                        <td class="border p-2">{{(o.total_buy_quantity - o.total_sell_quantity) | number}}</td>
+            
+                        <td class="border p-2">{{o.average_price | number: '1.0-0'}}</td>
+            
+                        <td class="border p-2">{{ showExchangePrice(o)| number: '1.0-0'}}</td>
+            
+                        <td class="border p-2">{{(o.total_buy_amount - o.total_sell_amount) | number : '1.0-0'}}
+                        </td>
+            
+                        <td class="border p-2">{{(showExchangePrice(o)*(o.total_buy_quantity - o.total_sell_quantity)) |
+                            number : '1.0-0'}}</td>
+            
+                        <td class="border p-2" [ngClass]="calculateProfitLost(o) > 0 ? 'price-up' : 'price-down'">
+                            {{calculateProfitLost(o) | number : '1.0-0'}}</td>
+            
+                        <td class="border p-2" [ngClass]="calculateProfitLost(o) > 0 ? 'price-up' : 'price-down'">
+                            {{percentProfitLost(o) | number: '1.2-2'}}%</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="w-1/2">
+                <table class="border-collapse w-full">
+                    <tr class="bg-gray-200">
+                        <th class="border p-2">Mã</th>
+                        <th class="border p-2">Giá Trung Bình</th>
+                        <th class="border p-2">Số Lượng</th>
+                        <th class="border p-2">Tổng Tiền Mua</th>
+                        <th class="border p-2">Tổng Tiền Bán</th>
+                        <th class="border p-2">Lãi/Lỗ</th>
+                        <th class="border p-2">% Lãi Lỗ</th>
+                        <th class="border p-2">Ngày Đóng Vị Thế</th>
+                    </tr>
+                    <tr class="tr_portfolio" *ngFor="let o of summaries">
+                        <td class="border p-2">{{o.stock_code}}</td>
+                        <td class="border p-2">{{parseInt(o.average_price) | number: '1.0-0'}}</td>
+                        <td class="border p-2">{{parseInt(o.volumn) |
+                            number}}</td>
+                        <td class="border p-2">{{parseInt(o.total_capital) | number}}
+                        </td>
+                        <td class="border p-2">{{ parseInt(o.total_revenue)| number}}
+                        </td>
+                        <td class="border p-2" [ngClass]="(parseInt(o.total_revenue) - parseInt(o.total_capital)) > 0 ? 'price-up' : 'price-down'">{{(parseInt(o.total_revenue) - parseInt(o.total_capital)) | number}}
+                        </td>
+                        <td class="border p-2" [ngClass]="(parseInt(o.total_revenue) - parseInt(o.total_capital)) > 0 ? 'price-up' : 'price-down'">{{((parseInt(o.total_revenue) - parseInt(o.total_capital))/parseInt(o.total_capital))*100 | number: '1.2-2'}}%
+                        </td>
+                        <td class="border p-2" type="date" placeholder="Created Date" name="date">{{o.created_at | date: 'dd/MM/YYYY'}}
+                        </td>
+                              <!-- <td><input [value]="orderBody['created_at']" (change)="onChangeValue($event, 'created_at')" type="date"
+                        placeholder="Created Date" name="date" class="border p-2 rounded w-full" /></td> -->
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="w-full inline-flex">
+            <div class="overflow-hidden w-[50%]">
+                <div class="total-lb" [ngClass]="totalProfitsLost() > 0 ? 'price-up': 'price-down'">
+                    <label>{{totalProfitsLost() > 0? 'Tổng Lãi: ': 'Tổng Lỗ: '}}</label>
+                    <span>{{totalProfitsLost() | number : '1.0-0'}}</span>
+                </div>
+            </div>
+             <div class="overflow-hidden w-[50%]">
+                <div class="total-lb" [ngClass]="totalProfitsLost() > 0 ? 'price-up': 'price-down'">
+                    <label>{{totalProfitsLost() > 0? 'Số từ Summary: ': 'Tổng Lỗ: '}}</label>
+                    <span>{{totalProfitsLost() | number : '1.0-0'}}</span>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <!-- =================portfolio: end============= -->
+    <!-- ==========CASH FLOW: START============= -->
+    <!-- ///////// -->
+    <div *ngIf="isShowOption == 'cashFlow'" class="text-right">
+        <button *ngIf="!isAddCash" class="custom-btn bg-blue-600 text-white px-3 py-2 rounded"
+            (click)="onAddNewCashFlow()">Add
+            New Cash Flow</button>
+    </div>
+    <div *ngIf="isShowOption != 'cashFlow'" class="pb-[2.5rem]">
+    </div>
+    <div *ngIf="isAddCash" class="pt-[3rem]">
+        <!-- /// -->
+        <table class="border-collapse tb-cash">
             <tr class="bg-gray-200">
-                <th class="border p-2">Stock Code</th>
-                <th class="border p-2">Average Price</th>
-                <th class="border p-2">Buy Quantity</th>
-                <th class="border p-2">Buy Total Amount</th>
+                <th class="border p-2 asterisk">Date</th>
+                <th class="border p-2 asterisk">Type</th>
+                <th class="border p-2 asterisk">Amount</th>
+                <th class="border p-2 asterisk">Status</th>
             </tr>
-            <tr class="tr_summary" *ngFor="let o of summary">
-                <td class="border p-2">{{o.stock_code}}</td>
-                <td class="border p-2">{{parseInt(o.average_price) | number: '1.0-0'}}</td>
-                <td class="border p-2">{{parseInt(o.total_buy_quantity) | number}}</td>
-                <td class="border p-2">{{parseInt(o.total_buy_amount) | number}}</td>
-                <!-- <td>{{15999.06367 | number: '1.0-0'}}</td> -->
+            <tr class="tr_portfolio">
+                <!-- ISSUE DATE -->
+                <td><input [value]="cashBody['created_at']" (change)="onChangeValueCash($event, 'created_at')"
+                        type="date" placeholder="Created Date" name="date" class="border p-2 rounded w-full" /></td>
+                <!-- TYPE -->
+                <td><select [value]="cashBody['type']" (change)="onChangeValueCash($event, 'type')" name="type"
+                        class="border p-2 rounded w-full">
+                        <option value="DEPOSIT">DEPOSIT</option>
+                        <option value="WITHDRAW">WITHDRAW</option>
+                    </select></td>
+                <!-- TOTAL AMOUNT -->
+                <td><input [value]="parseInt(cashBody['total_amount']) | number"
+                        (change)="onChangeValueCash($event, 'total_amount')" name="total_amount"
+                        placeholder="Total Amount" type="text" class="border p-2 rounded w-full" /></td>
+                <!-- DESCRIPTION -->
+                <td style="width: 16%;"><input [value]="cashBody['status']"
+                        (change)="onChangeValueCash($event, 'status')" type="text" placeholder="status"
+                        name="description" class="border p-2 rounded w-full" /></td>
             </tr>
         </table>
-        <table *ngIf="isSummary" class="border-collapse tab-summary">
-            <tr class="bg-gray-200">
-                <th class="border p-2">Stock Code</th>
-                <th class="border p-2">Real-time Price</th>
-                <th class="border p-2">profits/lost</th>
-            </tr>
-            <tr class="tr_summary font-bold" *ngFor="let o of summary">
-                <td class="border p-2">{{o.stock_code}}</td>
-                <td class="border p-2">{{ showAveragePrice(o)| number: '1.0-0'}}</td>
-                <td class="border p-2" [ngClass]="calculateProfitLost(o) > 0 ? 'price-up' : 'price-down'">
-                    {{calculateProfitLost(o) | number}}</td>
-                <!-- <td>{{15999.06367 | number: '1.0-0'}}</td> -->
-            </tr>
-        </table>
+        <!-- /// -->
+        <div class="btn-save">
+            <button (click)="addCashFlow('cash_flow')"
+                class="custom-btn bg-blue-600 text-white px-3 py-2 rounded">Lưu</button>
+        </div>
+        <div class="btn-close">
+            <button class="custom-btn bg-blue-600 text-white px-3 py-2 rounded" (click)="onCloseCash()">Đóng</button>
+        </div>
     </div>
-    <div *ngIf="isSummary" class="total-lb" [ngClass]="totalProfitsLost() > 0? 'price-up': 'price-down'">
-        <label>{{totalProfitsLost() > 0? 'Total Profits: ': 'Total Losts: '}}</label>
-        <span>{{totalProfitsLost() | number}}</span>
-    </div>
+
+    <!-- //////// -->
+    <ng-container *ngIf="isShowOption == 'cashFlow'">
+        <div class="flex">
+            <div class="w-1/2 text-center font-bold pr-[14rem]">
+                <label>DEPOSIT</label>
+            </div>
+            <div class="w-1/2 text-center font-bold pr-[14rem]">
+                <label>WITHDRAW</label>
+            </div>
+        </div>
+        <div class="gap-5 flex">
+            <div class="w-1/2">
+                <table class="border-collapse w-full">
+                    <tr class="bg-gray-200">
+                        <th class="border p-2">Thời Gian</th>
+                        <th class="border p-2">Tổng Tiền</th>
+                        <th class="border p-2">Trạng Thái</th>
+                    </tr>
+                    <tr *ngFor="let o of cashIn">
+                        <td class="border p-2">{{o.created_at | date: 'dd/MM/yyyy'}}</td>
+                        <td class="border p-2">{{parseInt(o.total_amount) | number}}</td>
+                        <td class="border p-2">{{o.status}}</td>
+                        <td class="w-[19%] border">
+                            <button class="ml-[1rem] custom-btn bg-blue-600 text-white px-3 py-2 rounded"
+                                (click)="deleteCashFlow(o.id, 'cash_flow')">Delete</button>
+                            <button (click)="openPopup(o)"
+                                class="ml-[1rem] custom-btn bg-blue-600 text-white px-3 py-2 rounded">Sửa</button>
+                        </td>
+                    </tr>
+                </table>
+                <div
+                    class="min-w-[15%] font-bold float-right bg-yellow-500 text-green-600 text-xl border-2 border-green-500 mt-2 rounded mr-[10.5rem]">
+                    <label class="p-[0.8rem]">Total Deposit:</label>
+                    <label class="pr-[0.8rem]" style="color: red;">{{calculateCashInOut('DEPOSIT') | number}}</label>
+                </div>
+            </div>
+            <div class="w-1/2">
+                <table class="border-collapse w-full">
+                    <tr class="bg-gray-200">
+                        <th class="border p-2">Thời Gian</th>
+                        <th class="border p-2">Tổng Tiền</th>
+                        <th class="border p-2">Trạng Thái</th>
+                    </tr>
+                    <tr *ngFor="let o of cashOut">
+                        <td class="border p-2">{{o.created_at | date: 'dd/MM/yyyy'}}</td>
+                        <td class="border p-2">{{parseInt(o.total_amount) | number}}</td>
+                        <td class="border p-2">{{o.status}}</td>
+                        <td class="w-[19%] border">
+                            <button class="ml-[1rem] custom-btn bg-blue-600 text-white px-3 py-2 rounded"
+                                (click)="deleteCashFlow(o.id, 'cash_flow')">Xóa</button>
+                            <button (click)="openPopup(o)"
+                                class="ml-[1rem] custom-btn bg-blue-600 text-white px-3 py-2 rounded">Sửa</button>
+                        </td>
+                    </tr>
+                </table>
+                <div
+                    class="min-w-[15%] font-bold float-right bg-yellow-500 text-green-600 font text-xl border-2 border-green-500 mt-2 rounded mr-[10.5rem]">
+                    <label class="p-[0.8rem]">Total Deposit: </label>
+                    <label class="pr-[0.8rem]" style="color: red;">{{calculateCashInOut('WITHDRAW') | number}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="flex">
+
+        </div>
+    </ng-container>
+    <!-- ===========CASH FLOW: END ============-->
 </div>
 <!-- /////// -->
-<div class="p-6 max-w-4xl mx-auto">
+<div class="p-6 max-w-4xl mx-auto pt-[4rem]">
     <h2 class="text-2xl font-bold mb-4 text-center">📈 VNDirect Realtime + DChart</h2>
 
     <button (click)="refresh()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">
@@ -168,10 +370,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let s of stocks" class="border-t hover:bg-gray-50 transition tr_summary"
+            <tr *ngFor="let s of stocks" class="border-t hover:bg-gray-50 transition tr_portfolio"
                 [class.text-green-600]="s.change && s.change > 0" [class.text-red-600]="s.change && s.change < 0">
                 <td class="p-2 font-bold" [ngClass]="checkColorPriceUpDown(s)">{{ s.code }}</td>
-                <td class="p-2 text-right font-bold" [ngClass]="checkColorPriceUpDown(s) + animationUpDown(s)">{{ s.price || s.close*1000 |
+                <td class="p-2 text-right font-bold" [ngClass]="checkColorPriceUpDown(s) + animationUpDown(s)">{{
+                    s.price || s.close*1000 |
                     number: '1.0-2' }}</td>
                 <td class="p-2 text-right font-bold price-noChange">{{ s.reference*1000 | number: '1.0-2' }}</td>
                 <td class="p-2 text-right font-bold" [ngClass]="checkColorPriceUpDown(s)">

@@ -21,7 +21,7 @@ export interface StockData {
   providedIn: 'root',
 })
 export class RealtimeService {
-  private apiUrl = environment.apiUrl;;
+  private apiUrl = environment.apiUrl + '/api';
   private wsUrl = 'ws://localhost:3000';
   private socket?: WebSocket;
   private stocks$ = new BehaviorSubject<StockData[]>([]);

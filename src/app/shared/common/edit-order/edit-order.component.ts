@@ -22,6 +22,12 @@ export class EditOrderComponent {
     "total_amount": '',
     "created_at": '',
     "description": ''
+  };
+  cashBody: { [key: string]: string } = {
+    "type": 'DEPOSIT',
+    "total_amount": '',
+    "created_at": '',
+    "status": ''
   }
   totalMount: any;
   issuedDate: any;
@@ -38,14 +44,16 @@ export class EditOrderComponent {
   }
 
   async editOrder() {
-    const updated_buy_amount = (parseInt(this.orderBody['price_buy']) * parseInt(this.orderBody['quantity'])) - this.data.item.total_amount;
-    const updated_buy_quantity = parseInt(this.orderBody['quantity']) - this.data.item.quantity;
-    //Gán giá trị chênh lệch giữa lệnh ban đầu và lênh update để update cho bảng summary(mới - cũ)
-    this.sb.bodyUpdateSummary = {
-      updated_buy_quantity: updated_buy_quantity,
-      updated_buy_amount: updated_buy_amount,
-      updated_sell_quantity: 0,
-      updated_sell_amount: 0
+    const updated_amount = this.data.item.order_type == 'BUY' ?
+    (parseInt(this.orderBody['price_buy']) * parseInt(this.orderBody['quantity'])) - this.data.item.total_amount : 
+    (parseInt(this.orderBody['price_sell']) * parseInt(this.orderBody['quantity'])) - this.data.item.total_amount
+    const updated_quantity = parseInt(this.orderBody['quantity']) - this.data.item.quantity
+    //Gán giá trị chênh lệch giữa lệnh ban đầu và lênh update để update cho bảng portfolio(mới - cũ)
+    this.sb.bodyUpdatePortfolio = {
+      updated_buy_quantity: this.data.item.order_type == 'BUY' ? updated_quantity : 0,
+      updated_buy_amount: this.data.item.order_type == 'BUY' ? updated_amount : 0,
+      updated_sell_quantity: this.data.item.order_type == 'SELL' ? updated_quantity : 0,
+      updated_sell_amount: this.data.item.order_type == 'SELL' ? updated_quantity : 0,
     }
     let edited = await this.sb.updateCall(this.data.item.id, {
       stock_code: this.orderBody['stock_code'],
@@ -53,11 +61,22 @@ export class EditOrderComponent {
       quantity: parseInt(this.orderBody['quantity']),
       price_buy: parseInt(this.orderBody['price_buy']),
       price_sell: parseInt(this.orderBody['price_sell']),
-      total_amount: parseInt(this.orderBody['price_buy']) * parseInt(this.orderBody['quantity']),
+      total_amount: this.data.item.order_type == 'BUY' ? 
+          parseInt(this.orderBody['price_buy']) * parseInt(this.orderBody['quantity']):
+          parseInt(this.orderBody['price_sell']) * parseInt(this.orderBody['quantity']),
       created_at: this.orderBody['created_at'],
       description: this.orderBody['description']
     }, 'orders');
     this.dialogRef.close();
+  }
+
+  async editCashFlow() {
+    let edited = await this.sb.updateCall(this.data.item.id, {
+      type: this.cashBody['type'],
+      total_amount: this.cashBody['total_amount'],
+      created_at: this.cashBody['created_at'],
+      status: this.cashBody['status']
+    }, 'cash_flow');
   }
 
   onChangeValue(event: any, fieldName: keyof typeof this.orderBody) {
@@ -77,6 +96,22 @@ export class EditOrderComponent {
         this.totalMount = this.orderBody['price_buy'] != '' ? parseInt(this.orderBody['price_buy']) * parseInt(this.orderBody['quantity']) :
           this.orderBody['price_sell'] != '' ? parseInt(this.orderBody['price_sell']) * parseInt(this.orderBody['quantity']) : 0
       }
+    }
+  }
+
+  onChangeValueCash(event: any, fieldName: any) {
+    if (event) {
+      if (fieldName == 'type' && this.cashBody[fieldName] != event) {
+        Object.keys(this.cashBody).forEach(key => {
+          if (key != 'type') {
+            this.cashBody[key] = ''
+          } else {
+            this.cashBody[key] = 'DEPOSIT'
+          }
+        });
+      }
+      const value = event.target.value;
+      this.cashBody[fieldName] = value;
     }
   }
 

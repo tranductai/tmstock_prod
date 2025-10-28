@@ -11,14 +11,21 @@
     display: flex;
     justify-content: center;
 }
-.custom-btn {
+/* .custom-btn {
     width: 50px;
     height: 30px;
     cursor: pointer;
-}
+} */
 .asterisk {
   &:before {
     content: '* ';
     color: red;
   }
+}
+th {
+  background-color: #a366ff;
+  border: 1px solid #c2c2d6;
+  text-align: left;
+  font-weight: 600;
+  color: #fff;
 }

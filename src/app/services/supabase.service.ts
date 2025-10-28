@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -8,7 +9,8 @@ export class SupabaseService {
     isLoginCheck: EventEmitter<any> = new EventEmitter();
     isLogin: boolean = false;
     private supabase: SupabaseClient;
-    bodyUpdateSummary = {
+    private resetPass_Url = environment.ResetPass_url;
+    bodyUpdatePortfolio = {
         updated_buy_quantity: 0,
         updated_buy_amount: 0,
         updated_sell_quantity: 0,
@@ -50,8 +52,12 @@ export class SupabaseService {
     }
 
     // === ORDERS ===
-    async getOrders() {
-        return await this.supabase.from('orders').select('*').order('created_at', { ascending: false });
+    async getOrders(page: any, pageSize: any) {
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
+        const { data, count, error } = await this.supabase.from('orders').select('*').order('created_at', { ascending: false }).range(from, to);
+        if(error) throw error;
+        return {data, count}
     }
 
     async addCall(order: any, table: any) {
@@ -77,7 +83,19 @@ export class SupabaseService {
         return data;
     }
 
-    async removeChannel(chanel: any){
+    //RESET PASSWORD
+    async resetPassword(email: string) {
+        return await this.supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: this.resetPass_Url + `/reset-password` // Trang app bạn sẽ xử lý reset
+        });
+    }
+
+    //UPDATE PASSWORD
+    async updatePassword(newPassword: string) {
+        return await this.supabase.auth.updateUser({ password: newPassword });
+    }
+
+    async removeChannel(chanel: any) {
         this.supabase.removeChannel(chanel);
     }
 
@@ -94,21 +112,47 @@ export class SupabaseService {
         return data;
     }
 
-    //== SUMMARY ===
-    async getSummary() {
+    //== portfolio ===
+    async getPortfolio() {
+        return this.supabase.from('portfolio').select('*').order('created_at', { ascending: false });
+    }
+
+    listenPortfolio(callback: (payload: any) => void) {
+        this.supabase
+            .channel('portfolio-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'portfolio' }, callback)
+            .subscribe();
+    }
+
+     //== CASH FLOW ===
+    async getCashFlow() {
+        return this.supabase.from('cash_flow').select('*').order('created_at', { ascending: false });
+    }
+  
+    listenCashFlow(callback: (payload: any) => void) {
+        this.supabase
+            .channel('cash-Flow-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'cash_flow' }, callback)
+            .subscribe();
+    }
+
+    //==Summary ===
+     //== CASH FLOW ===
+    async getSummaries() {
         return this.supabase.from('summary').select('*').order('created_at', { ascending: false });
     }
+
     listenSummary(callback: (payload: any) => void) {
         this.supabase
             .channel('summary-changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'summary' }, callback)
             .subscribe();
     }
-    // async addSummary(item: any) {
-    //     return this.supabase.from('summary').insert(item)
+    // async addPortfolio(item: any) {
+    //     return this.supabase.from('portfolio').insert(item)
     // }
 
-    // async deleteSummary(id: string) {
+    // async deletePortfolio(id: string) {
     //     const { error } = await this.supabase
     //         .from('orders')
     //         .delete()
@@ -117,7 +161,7 @@ export class SupabaseService {
     //     if (error) throw error;
     // }
 
-    // async updateSummary(item: any){
+    // async updatePortfolio(item: any){
         
     // }
 }
